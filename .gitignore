@@ -12,3 +12,5 @@ mongo_data/
 
 # Logs y otros archivos temporales
 *.log
+
+.DS_Store

@@ -1,7 +1,5 @@
-# Contenido de requirements.txt (¡Corregido!)
-# Contenido de requirements.txt
 fastapi
 uvicorn[standard]
 pydantic[email] 
-pymongo
+motor
 python-dotenv
