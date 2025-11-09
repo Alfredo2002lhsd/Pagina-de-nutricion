@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Auth Callback</title>
+</head>
+<body>
+  <p>Procesando inicio de sesión...</p>
+  <script>
+    (async function() {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('code');
+      const next = params.get('next'); // optional relative path, e.g. /opcion1/index.html
+      if (!code) {
+        document.body.innerText = 'No se recibió código de autorización.';
+        return;
+      }
+      try {
+        const resp = await fetch('http://localhost:8080/auth/exchange', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code })
+        });
+        if (!resp.ok) {
+          document.body.innerText = 'Intercambio falló. Intenta iniciar sesión de nuevo.';
+          console.error('Exchange failed', resp.status);
+          return;
+        }
+        const { token } = await resp.json();
+        // Guardar token para desarrollo (NO recomendado en producción)
+        localStorage.setItem('AUTH_TOKEN', token);
+        // limpiar query string
+        history.replaceState({}, '', window.location.pathname + (next ? ('?next=' + encodeURIComponent(next)) : ''));
+        // redirigir al next si es relativo, si no, al dashboard
+        if (next && (next.startsWith('/') || next.startsWith(window.location.origin))) {
+          // keep relative path on the same origin
+          window.location.href = next.startsWith('/') ? next : new URL(next).pathname;
+        } else {
+          window.location.href = '/dashboard.html';
+        }
+      } catch (err) {
+        console.error(err);
+        document.body.innerText = 'Error al intercambiar el código.';
+      }
+    })();
+  </script>
+</body>
+</html>
