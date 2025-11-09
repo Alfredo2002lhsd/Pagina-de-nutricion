@@ -154,6 +154,52 @@ window.addEventListener('click', function(event) {
   });
 
 
+document.addEventListener("DOMContentLoaded", async function () {
+  // --- 1️⃣ Capturar code de la URL ---
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get("code");
+
+  if (!code) {
+    console.log("No se encontró código en la URL. Redirigiendo al login...");
+    // opcional: redirigir a login si no hay code
+    // window.location.href = "http://localhost:3000/login.html";
+    return;
+  }
+
+  try {
+    // --- 2️⃣ Intercambiar code por JWT ---
+    const res = await fetch("http://localhost:8080/auth/exchange", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code }),
+    });
+
+    if (!res.ok) throw new Error("Código inválido o expirado");
+
+    const data = await res.json();
+    if (!data.token) throw new Error("No se recibió token del backend");
+
+    // --- 3️⃣ Guardar JWT en localStorage ---
+    localStorage.setItem("token", data.token);
+    console.log("Token recibido:", data.token);
+
+    // --- 4️⃣ Limpiar la URL ---
+    const url = new URL(window.location);
+    url.searchParams.delete("code");
+    window.history.replaceState({}, document.title, url);
+
+    // --- 5️⃣ Redirigir a la página protegida ---
+    window.location.href = "/opcion1/index.html";
+
+  } catch (err) {
+    console.error("Error intercambiando código:", err);
+    alert("Error de autenticación. Por favor inicia sesión de nuevo.");
+    // opcional: redirigir a login
+    // window.location.href = "http://localhost:3000/login.html";
+  }
+});
+
+
 
 
 
