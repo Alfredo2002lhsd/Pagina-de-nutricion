@@ -1,5 +1,7 @@
+version: '3.8'
+
 services:
-  # 1. Backend (FastAPI)
+
   app:
     build: .
     container_name: medical_history_app
@@ -8,18 +10,19 @@ services:
     depends_on:
       - mongo
     environment:
-      MONGO_URI: mongodb://mongo:27017/medical_db
 
-  # 2. Base de datos (MongoDB)
+      - MONGO_URI=mongodb://mongo:27017/medical_db
+
+
   mongo:
     image: mongo:latest
     container_name: medical_history_mongo
     ports:
-      - "27017:27017"
+      - "27018:27017"
     volumes:
       - mongo_data:/data/db
 
-  # 3. Frontend (HTML + JS)
+
   frontend:
     build:
       context: .
@@ -29,6 +32,7 @@ services:
       - "8080:80"
     depends_on:
       - app
+
 
 volumes:
   mongo_data:

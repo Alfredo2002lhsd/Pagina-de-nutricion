@@ -14,11 +14,7 @@ from database import (
 # Definición de tipos personalizados para Pydantic
 PyObjectId = Annotated[str, BeforeValidator(str)]
 
-# =================================================================
-# 1. MODELOS DE DATOS PYDANTIC (Se importan del archivo models.py si estuvieran separados, aquí se mantienen para simplificar)
-# Si deseas un main.py limpio, mueve estos a models.py y usa 'from models import ...'
-# Sin embargo, como nos enviaste models.py por separado, aquí reusaremos la definición de los modelos tal cual estaba en el main.py original.
-# =================================================================
+
 
 class MedicalHistoryBase(BaseModel):
     """Modelo base para la entrada de datos."""
@@ -66,9 +62,8 @@ class MedicalHistoryOut(MedicalHistoryBase):
             }
         }
 
-# =================================================================
-# 2. CONFIGURACIÓN DE FASTAPI
-# =================================================================
+
+#CONFIGURACIÓN DE FASTAPI
 
 app = FastAPI(
     title="API de Historial Médico",
@@ -89,27 +84,28 @@ app.add_middleware(
 app.add_event_handler("startup", connect_to_mongo)
 app.add_event_handler("shutdown", close_mongo_connection)
 
-# =================================================================
-# 3. RUTAS DE LA API
-# =================================================================
 
-@app.get("/status", tags=["Status"])
-async def get_status():
-    """Verifica el estado de la API y la conexión a la base de datos."""
-    db_status = "OK"
+# RUTAS DE LA API
+
+
+@app.get("/status", tags=["Estado"])
+async def get_api_status():
+    """Verifica si la API y la Base de Datos están operativas."""
     try:
-        # Prueba la conexión realizando una operación trivial
-        await get_histories_collection().find_one({}) 
-    except ConnectionError:
-        db_status = "Error de conexión"
+        # Intentamos un comando simple a Mongo
+        if db is not None:
+            await db.command("ping")
+            db_status = "OK"
+        else:
+            db_status = "Desconectado"
     except Exception as e:
-        db_status = f"Error DB: {str(e)}"
+        db_status = f"Error: {str(e)}"
 
     return {
         "api_status": "OK",
         "database": db_status
     }
-
+    
 @app.post("/histories", response_model=MedicalHistoryOut, status_code=status.HTTP_201_CREATED, tags=["Historial Médico"])
 async def create_medical_history(history: MedicalHistoryCreate):
     """Crea un nuevo registro de historial médico."""

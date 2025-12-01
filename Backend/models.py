@@ -6,9 +6,9 @@ from bson import ObjectId
 # Definición de tipos personalizados para Pydantic
 PyObjectId = Annotated[str, BeforeValidator(str)]
 
-# =================================================================
+
 # MODELOS BASE
-# =================================================================
+
 
 class MedicalHistoryBase(BaseModel):
     """Modelo base para la entrada de datos."""
@@ -29,9 +29,8 @@ class MedicalHistoryBase(BaseModel):
             }
         }
 
-# =================================================================
-# MODELOS DE ENTRADA Y SALIDA (Input/Output)
-# =================================================================
+
+# MODELOS DE ENTRADA Y SALIDA
 
 class MedicalHistoryCreate(MedicalHistoryBase):
     """Modelo para crear un nuevo registro (Input). Hereda de MedicalHistoryBase."""
