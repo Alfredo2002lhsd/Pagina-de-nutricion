@@ -21,7 +21,7 @@ async def connect_to_mongo():
 
     for intento in range(1, max_retries + 1):
         try:
-            print(f"🔄 Intento {intento}/{max_retries} - Conectando a: {MONGO_URI}")
+            print(f"Intento {intento}/{max_retries} - Conectando a: {MONGO_URI}")
             
             client = AsyncIOMotorClient(MONGO_URI)
             
@@ -29,7 +29,7 @@ async def connect_to_mongo():
             await client.admin.command('ping')
             
             db = client[DATABASE_NAME]
-            print(f"✅ ¡Conexión a MongoDB exitosa en la base de datos: {DATABASE_NAME}!")
+            print(f"¡Conexión a MongoDB exitosa en la base de datos: {DATABASE_NAME}!")
             return # Salimos de la función porque ya conectó
 
         except Exception as e:
@@ -38,7 +38,7 @@ async def connect_to_mongo():
                 print(f"⏳ Esperando {wait_seconds} segundos para reintentar...")
                 await asyncio.sleep(wait_seconds)
             else:
-                print("❌ ERROR CRÍTICO: No se pudo conectar a MongoDB después de varios intentos.")
+                print(" ERROR CRÍTICO: No se pudo conectar a MongoDB después de varios intentos.")
                 client = None
                 db = None
 
@@ -69,9 +69,8 @@ def history_helper(history: Dict[str, Any]) -> Dict[str, Any]:
 # 5. OBTENER LA COLECCIÓN
 def get_histories_collection():
     """Devuelve la referencia a la colección de historiales."""
-    if db is None:
-        # Si db es None, intentamos reconectar o lanzamos error, 
+    if db is None: 
         # pero por ahora devolvemos un objeto vacío para que no explote inmediatamente
-        print("⚠️ Advertencia: Intentando acceder a la colección sin conexión a DB")
+        print("Advertencia: Intentando acceder a la colección sin conexión a DB")
         return None
     return db.get_collection("histories")
