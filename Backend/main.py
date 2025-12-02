@@ -1,14 +1,21 @@
+# Traemos lo básico de FastAPI para hacer APIs
 from fastapi import FastAPI, HTTPException, status
+# Para permitir que otros dominios hablen con esta API
 from fastapi.middleware.cors import CORSMiddleware
+# Para definir cómo se ven los datos que entran y salen
 from pydantic import BaseModel, Field, EmailStr, BeforeValidator
+# Para definir tipos de Python como opcionales o listas
 from typing import Optional, Annotated, List
+# Para manejar fechas y horas
 import datetime
+# Para manejar los IDs de MongoDB
 from bson import ObjectId
+# Importamos todas las funciones que manejan la base de datos (Mongo)
 from database import (
-    connect_to_mongo, 
-    close_mongo_connection, 
-    get_histories_collection, 
-    history_helper,
+    connect_to_mongo, # Se conecta a la base de datos
+    close_mongo_connection, # Cierra la conexión
+    get_histories_collection, # Obtiene la colección de historiales
+    history_helper, # Ayuda a formatear los documentos de Mongo
 )
 
 # Definición de tipos personalizados para Pydantic
