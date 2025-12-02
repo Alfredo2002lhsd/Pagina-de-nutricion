@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  # Servicio para el Backend de Flask
+  backend:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: progreso-backend
+    # Mapea el puerto 5000 del contenedor (Flask) al puerto 5000 de tu máquina (Host)
+    ports:
+      - "5000:5000"
+    # Usa el volumen para que la base de datos (progreso.db) persista en el host
+    # y los cambios en el código Python se reflejen sin reconstruir (hot reload)
+    volumes:
+      - .:/app
+    # El comando ya está definido en el Dockerfile: 
+    # CMD ["sh", "-c", "python crear_db.py && python app.py"]
+
+  # Servicio para el Frontend de Nginx
+  frontend:
+    build: 
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: progreso-frontend
+    # Mapea el puerto 80 del contenedor (Nginx) al puerto 3000 de tu máquina (Host)
+    ports:
+      - "3000:80"
+    # Asegura que el backend se inicie antes que el frontend
+    depends_on:
+      - backend
